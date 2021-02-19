@@ -4,9 +4,9 @@ WARNING: you SHOULD NOT use ".to()" or ".cuda()" in each implementation block.
 """
 import torch
 import random
-from eecs598 import Solver
-from a3_helper import svm_loss, softmax_loss
-from fully_connected_networks import *
+from .eecs598 import Solver
+from .a3_helper import svm_loss, softmax_loss
+from .fully_connected_networks import *
 
 def hello_convolutional_networks():
   """

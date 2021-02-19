@@ -5,7 +5,7 @@ WARNING: you SHOULD NOT use ".to()" or ".cuda()" in each implementation block.
 
 import torch
 import torch.nn as nn
-from a4_helper import *
+from .a4_helper import *
 import torch.nn.functional as F
 import torch.optim as optim
 

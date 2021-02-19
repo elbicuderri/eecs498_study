@@ -5,7 +5,7 @@ WARNING: you SHOULD NOT use ".to()" or ".cuda()" in each implementation block.
 import torch
 import random
 import statistics
-from linear_classifier import sample_batch
+from .linear_classifier import sample_batch
 
 
 def hello_two_layer_net():

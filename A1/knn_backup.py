@@ -165,8 +165,11 @@ def compute_distances_no_loops(x_train, x_test):
   x_test = x_test.view(num_test, -1)
   
   x_train_pow = x_train.pow(2).sum(dim=1)
+  print(x_train_pow.shape, x_train_pow.dtype)
   x_test_pow = x_test.pow(2).sum(dim=1)
+  print(x_test_pow.shape, x_test_pow.dtype)
   x_tt = torch.matmul(x_train, x_test.t())
+  print(x_tt.shape, x_tt.dtype)
 
   dists = (x_train_pow + x_test_pow) - 2 * x_tt
   dists = dists.sqrt()
@@ -240,14 +243,7 @@ class KnnClassifier:
     # computation and simply memorize the training data.                      #
     ###########################################################################
     # Replace "pass" statement with your code
-    if not x_train.is_contiguous():
-      x_train = x_train.contiguous()
-      
-    if not y_train.is_contiguous():
-      y_train = y_train.contiguous()
-      
-    self.x_train = x_train
-    self.y_train = y_train
+    pass
     ###########################################################################
     #                           END OF YOUR CODE                              #
     ###########################################################################
@@ -271,8 +267,7 @@ class KnnClassifier:
     # output labels.
     ###########################################################################
     # Replace "pass" statement with your code
-    dists = compute_distances_no_loops(self.x_train, x_test)
-    y_test_pred = predict_labels(dists, self.y_train, k)
+    pass
     ###########################################################################
     #                           END OF YOUR CODE                              #
     ###########################################################################

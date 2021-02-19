@@ -4,8 +4,8 @@ WARNING: you SHOULD NOT use ".to()" or ".cuda()" in each implementation block.
 """
 import torch
 import random
-from a3_helper import svm_loss, softmax_loss
-from eecs598 import Solver
+from .a3_helper import svm_loss, softmax_loss
+from .eecs598 import Solver
 
 def hello_fully_connected_networks():
   """
