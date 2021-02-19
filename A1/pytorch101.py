@@ -524,7 +524,18 @@ def normalize_columns(x):
   #                    TODO: Implement this function                          #
   #############################################################################
   # Replace "pass" statement with your code
-  xtype = x.dtype
+  (M, _) = x.shape
+  # y = x.clone()
+  mean_tensor = torch.sum(x, dim=0) / M
+  # print(mean_tensor)
+  std_tensor = x - mean_tensor
+  std_tensor = torch.pow(std_tensor, 2)
+  std_tensor = std_tensor.sum(dim=0)
+  std_tensor = std_tensor / (M-1)
+  std_tensor = std_tensor.sqrt()
+  # print(std_tensor)
+  y = (x - mean_tensor) / std_tensor
+  
   #############################################################################
   #                            END OF YOUR CODE                               #
   #############################################################################
@@ -569,7 +580,12 @@ def mm_on_gpu(x, w):
   #                    TODO: Implement this function                          #
   #############################################################################
   # Replace "pass" statement with your code
-  pass
+  (A, B) = x.shape
+  (B, C) = w.shape
+  x = x.cuda()
+  w = w.cuda()
+  y = torch.zeros((A, C), device='cuda')
+  y = x.mm(w)
   #############################################################################
   #                            END OF YOUR CODE                               #
   #############################################################################
