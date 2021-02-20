@@ -164,8 +164,12 @@ def compute_distances_no_loops(x_train, x_test):
   x_train = x_train.view(num_train, -1)
   x_test = x_test.view(num_test, -1)
   
-  x_train_pow = x_train.pow(2).sum(dim=1)
-  x_test_pow = x_test.pow(2).sum(dim=1)
+#   x_train_pow = x_train.pow(2).sum(dim=1)
+#   x_test_pow = x_test.pow(2).sum(dim=1)
+  
+  x_train_pow = x_train.pow(2).sum(dim=1).unsqueeze(1).repeat(1, num_test)
+  x_test_pow = x_test.pow(2).sum(dim=1).unsqueeze(0).repeat(num_train, 1)
+  
   x_tt = torch.matmul(x_train, x_test.t())
 
   dists = (x_train_pow + x_test_pow) - 2 * x_tt
