@@ -1,6 +1,7 @@
 import random
 import torch
-import eecs598
+# import eecs598
+from .utils import reset_seed
 
 """ Utilities for computing and checking gradients. """
 
@@ -23,7 +24,8 @@ def grad_check_sparse(f, x, analytic_grad, num_checks=10, h=1e-7):
   - h: Step size for computing numeric derivatives
   """
   # fix random seed to 0 
-  eecs598.reset_seed(0)
+  # eecs598.reset_seed(0)
+  reset_seed(0)
   for i in range(num_checks):
     
     ix = tuple([random.randrange(m) for m in x.shape])
