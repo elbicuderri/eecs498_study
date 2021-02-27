@@ -5,7 +5,9 @@ import matplotlib.pyplot as plt
 import torchvision
 from torchvision.datasets import CIFAR10
 
-import eecs598
+# import eecs598
+from .vis import tensor_to_image
+from .utils import reset_seed
 
 
 def _extract_tensors(dset, num=None, x_dtype=torch.float32):
@@ -115,7 +117,8 @@ def preprocess_cifar10(
     ]
     samples_per_class = 12
     samples = []
-    eecs598.reset_seed(0)
+    # eecs598.reset_seed(0)
+    reset_seed(0)
     for y, cls in enumerate(classes):
         plt.text(-4, 34 * y + 18, cls, ha='right')
         idxs, = (y_train == y).nonzero(as_tuple=True)
@@ -123,7 +126,8 @@ def preprocess_cifar10(
             idx = idxs[random.randrange(idxs.shape[0])].item()
             samples.append(X_train[idx])
     img = torchvision.utils.make_grid(samples, nrow=samples_per_class)
-    plt.imshow(eecs598.tensor_to_image(img))
+    # plt.imshow(eecs598.tensor_to_image(img))
+    plt.imshow(tensor_to_image(img))
     plt.axis('off')
     plt.show()
 
