@@ -7,8 +7,7 @@ import matplotlib.pyplot as plt
 import random
 import math
 
-# import eecs598
-from .utils import reset_seed
+import eecs598
 
 def hello_helper():
   """
@@ -52,7 +51,7 @@ def get_toy_data(
   C = num_classes
 
   # We set the random seed for repeatable experiments.
-  reset_seed(0)
+  eecs598.reset_seed(0)
 
   # Generate some random parameters, storing them in a dict
   params = {}

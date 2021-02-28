@@ -5,7 +5,7 @@ WARNING: you SHOULD NOT use ".to()" or ".cuda()" in each implementation block.
 import torch
 import random
 import statistics
-from .linear_classifier import sample_batch
+from linear_classifier import sample_batch
 
 
 def hello_two_layer_net():
@@ -116,6 +116,10 @@ def nn_forward_pass(params, X):
     # shape (N, C).                                                            #
     ############################################################################
     # Replace "pass" statement with your code
+    hidden = torch.mm(X, W1) + b1
+    hidden = torch.clamp(hidden, min=0)
+    
+    scores = torch.mm(hidden, W2) + b2
     
     ###########################################################################
     #                             END OF YOUR CODE                            #
@@ -176,7 +180,12 @@ def nn_forward_backward(params, X, y=None, reg=0.0):
     # (Check Numeric Stability in http://cs231n.github.io/linear-classify/).   #
     ############################################################################
     # Replace "pass" statement with your code
-    pass
+    scores -= torch.max(scores) # numeric stability # (N, C)
+    allexp = torch.exp(scores) # (N, C)
+    sumup = torch.sum(allexp, dim = 1) # (N, )
+    correct = allexp[torch.arange(N), y] # (N, )
+    prob = correct / sumup # only extract correct label # (N, )
+    loss = -torch.sum(torch.log(prob))/N + reg * torch.sum(W1 * W1) + reg * torch.sum(W2 * W2)
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -190,7 +199,19 @@ def nn_forward_backward(params, X, y=None, reg=0.0):
     # tensor of same size                                                     #
     ###########################################################################
     # Replace "pass" statement with your code
-    pass
+    factor = torch.div(allexp, sumup.view(-1, 1)) # sumup.view(-1, 1) -> (N, 1)
+    factor[torch.arange(N), y] = -1 * (sumup - correct) / sumup # for correct class
+    factor = factor.div(N) # (N, C)
+    
+    grads["b2"] = torch.sum(factor, dim=0) # (C, )
+    grads["W2"] = h1.t().mm(factor) + 2 * reg * W2 # (H, N) * (N, C)
+    
+    hidden = factor.mm(W2.t())
+    hidden[h1 == 0] = 0 # ReLU
+    
+    grads["b1"] = torch.sum(hidden, dim=0)
+    grads["W1"] = X.t().mm(hidden) + 2 * reg * W1
+    
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
