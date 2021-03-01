@@ -55,6 +55,7 @@ class TwoLayerNet(object):
             learning_rate=1e-3, learning_rate_decay=0.95,
             reg=5e-6, num_iters=100,
             batch_size=200, verbose=False):
+
     return nn_train(
             self.params,
             nn_forward_backward,
@@ -184,6 +185,7 @@ def nn_forward_backward(params, X, y=None, reg=0.0):
     allexp = torch.exp(scores) # (N, C)
     sumup = torch.sum(allexp, dim = 1) # (N, )
     correct = allexp[torch.arange(N), y] # (N, )
+    
     prob = correct / sumup # only extract correct label # (N, )
     loss = -torch.sum(torch.log(prob))/N + reg * torch.sum(W1 * W1) + reg * torch.sum(W2 * W2)
     ###########################################################################
@@ -281,7 +283,10 @@ def nn_train(params, loss_func, pred_func, X, y, X_val, y_val,
     # stored in the grads dictionary defined above.                         #
     #########################################################################
     # Replace "pass" statement with your code
-    pass
+    params['W1'] -= learning_rate * grads["W1"]
+    params['W2'] -= learning_rate * grads["W2"]
+    params['b1'] -= learning_rate * grads["b1"]
+    params['b2'] -= learning_rate * grads["b2"]
     #########################################################################
     #                             END OF YOUR CODE                          #
     #########################################################################
@@ -337,7 +342,9 @@ def nn_predict(params, loss_func, X):
   # TODO: Implement this function; it should be VERY simple!                #
   ###########################################################################
   # Replace "pass" statement with your code
-  pass
+  score, _ = nn_forward_pass(params, X)
+  y_pred = torch.argmax(score, dim=1)
+  
   ###########################################################################
   #                              END OF YOUR CODE                           #
   ###########################################################################
@@ -372,7 +379,10 @@ def nn_get_search_params():
   # classifier.                                                             #
   ###########################################################################
   # Replace "pass" statement with your code
-  pass
+  hidden_sizes = [100, 200, 300, 400, 500]
+  learning_rates = [1e0, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6]
+  regularization_strengths = [5e-5, 7e-5, 9e-5, 1e-4, 3e-4]
+  learning_rate_decays = [1.0, 0.9, 0.75, 0.5]
   ###########################################################################
   #                           END OF YOUR CODE                              #
   ###########################################################################
@@ -411,7 +421,7 @@ def find_best_net(data_dict, get_param_set_fn):
   best_net = None
   best_stat = None
   best_val_acc = 0.0
-
+  learning_rates, hidden_sizes, regularization_strengths, learning_rate_decays = get_param_set_fn()
   #############################################################################
   # TODO: Tune hyperparameters using the validation set. Store your best      #
   # trained model in best_net.                                                #
@@ -426,7 +436,36 @@ def find_best_net(data_dict, get_param_set_fn):
   # automatically like we did on the previous exercises.                      #
   #############################################################################
   # Replace "pass" statement with your code
-  pass
+  best_val = -1
+  best_l = 0
+  best_h = 0
+  best_r = 0
+  for h in hidden_sizes:
+    for l in learning_rates:
+      for r in regularization_strengths:
+        for d in learning_rate_decays:
+          model = TwoLayerNet(3 * 32 * 32, h, 10, device=data_dict['X_train'].device)
+          model.train(data_dict['X_train'], 
+                      data_dict['y_train'], 
+                      data_dict['X_val'],
+                      data_dict['y_val'],
+                      learning_rate=l, 
+                      learning_rate_decay=d,
+                      reg=r, 
+                      num_iters=2000,
+                      batch_size=200, 
+                      verbose=False)
+          val_acc = (model.predict(data_dict['X_val']) == data_dict['y_val']).float().mean().item()
+          if val_acc > best_val:
+            best_val = val_acc
+            best_net = model
+            best_l = l
+            best_h = h
+            best_r = r
+          # Print out results.
+          # print('lr %e reg %e hidden %e val accuracy: %f' % (
+                    # l, r, h, val_acc))
+  print("best h is %e, l is %e, r is %e" %(best_h, best_l, best_r))    
   #############################################################################
   #                               END OF YOUR CODE                            #
   #############################################################################
