@@ -4,8 +4,8 @@ WARNING: you SHOULD NOT use ".to()" or ".cuda()" in each implementation block.
 """
 import torch
 import random
-from .a3_helper import svm_loss, softmax_loss
-from .eecs598 import Solver
+from a3_helper import svm_loss, softmax_loss
+from eecs598 import Solver
 
 def hello_fully_connected_networks():
   """
@@ -39,7 +39,9 @@ class Linear(object):
     # will need to reshape the input into rows.                                 #
     #############################################################################
     # Replace "pass" statement with your code
-    pass
+    N = x.shape[0]
+    x = x.view(N, -1) # (N, D)
+    out = torch.mm(x, w) + b # (N, M)
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
@@ -67,7 +69,12 @@ class Linear(object):
     # TODO: Implement the linear backward pass.                                 #
     #############################################################################
     # Replace "pass" statement with your code
-    pass
+    dx = torch.mm(dout, w.t())
+    print(f"dx's shape: {dx.shape}")
+    dw = torch.mm(x.t(), dout)
+    print(f"dw's shape: {dw.shape}")
+    db = dout.sum(dim=0)
+    print(f"db's shape: {db.shape}")
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
