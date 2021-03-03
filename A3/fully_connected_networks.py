@@ -99,7 +99,7 @@ class ReLU(object):
     # You should not change the input tensor with an in-place operation.        #
     #############################################################################
     # Replace "pass" statement with your code
-    pass
+    out = torch.clamp(x, min=0)
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
@@ -122,7 +122,9 @@ class ReLU(object):
     # You should not change the input tensor with an in-place operation.        #
     #############################################################################
     # Replace "pass" statement with your code
-    pass
+    dx = cache.detach().clone()
+    dx[dx > 0] = 1
+    dx[dx <= 0] = 0
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
