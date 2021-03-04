@@ -40,12 +40,13 @@ class Linear(object):
     #############################################################################
     # Replace "pass" statement with your code
     N = x.shape[0]
-    x = x.view(N, -1) # (N, D)
-    out = torch.mm(x, w) + b # (N, M)
+    # x = x.view(N, -1) # (N, D)
+    out = torch.mm(x.view(N, -1), w) + b # (N, M)
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
     cache = (x, w, b)
+    # out = out.reshape(shape=x.shape)
     return out, cache
 
   @staticmethod
@@ -70,8 +71,9 @@ class Linear(object):
     #############################################################################
     # Replace "pass" statement with your code
     dx = torch.mm(dout, w.t())
+    dx = dx.reshape(shape=x.shape)
     print(f"dx's shape: {dx.shape}")
-    dw = torch.mm(x.t(), dout)
+    dw = torch.mm(x.view(x.shape[0], -1).t(), dout)
     print(f"dw's shape: {dw.shape}")
     db = dout.sum(dim=0)
     print(f"db's shape: {db.shape}")
@@ -122,9 +124,11 @@ class ReLU(object):
     # You should not change the input tensor with an in-place operation.        #
     #############################################################################
     # Replace "pass" statement with your code
-    dx = cache.detach().clone()
-    dx[dx > 0] = 1
-    dx[dx <= 0] = 0
+    mask = torch.zeros_like(x)
+    mask[x > 0] = 1
+    # dx = torch.mm(dout, mask)
+    dx = mask * dout
+    
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
