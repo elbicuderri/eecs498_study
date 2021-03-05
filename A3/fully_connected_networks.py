@@ -208,7 +208,11 @@ class TwoLayerNet(object):
     # weights and biases using the keys 'W2' and 'b2'.                        #
     ###########################################################################
     # Replace "pass" statement with your code
-    pass
+    self.device= device
+    self.params['W1'] = weight_scale * torch.randn(input_dim, hidden_dim, dtype=dtype, device=device)
+    self.params['W2'] = weight_scale * torch.randn(hidden_dim, num_classes, dtype=dtype, device=device)
+    self.params['b1'] = torch.zeros(hidden_dim, dtype=dtype, device=device)
+    self.params['b2'] = torch.zeros(num_classes, dtype=dtype, device=device)
     ###########################################################################
     #                            END OF YOUR CODE                             #
     ###########################################################################
@@ -256,7 +260,8 @@ class TwoLayerNet(object):
     # class scores for X and storing them in the scores variable.             #
     ###########################################################################
     # Replace "pass" statement with your code
-    pass
+    hidden, cache_first = Linear_ReLU.forward(X, self.params['W1'], self.params['b1'])
+    scores, cache_second = Linear.forward(hidden, self.params['W2'], self.params['b2'])
     ###########################################################################
     #                            END OF YOUR CODE                             #
     ###########################################################################
@@ -277,7 +282,16 @@ class TwoLayerNet(object):
     # a factor of 0.5.                                                        #
     ###########################################################################
     # Replace "pass" statement with your code
-    pass
+    # y = y.to(self.device)
+    loss, dout = softmax_loss(scores, y)
+    # did not count the regularization
+    loss += self.reg * (torch.sum(self.params['W1'] ** 2) + torch.sum(self.params['W2'] ** 2))
+    dhidden, grads['W2'], grads['b2'] = Linear.backward(dout, cache_second)
+    _, grads['W1'], grads['b1'] = Linear_ReLU.backward(dhidden, cache_first)
+    
+    # forget the W1 AND W2 regularization term
+    grads['W2'] += 2 * self.reg * self.params['W2']
+    grads['W1'] += 2 * self.reg * self.params['W1']
     ###########################################################################
     #                            END OF YOUR CODE                             #
     ###########################################################################
@@ -435,7 +449,15 @@ def create_solver_instance(data_dict, dtype, device):
   ##############################################################################
   solver = None
   # Replace "pass" statement with your code
-  pass
+  # print(data_dict['X_train'].device)
+  solver = Solver(model,
+                  data_dict,
+                  lr_decay=0.9,
+                  optim_config={'learning_rate':1e-1},
+                  num_epochs=20,
+                  device='cuda')
+  solver.train()
+  
   ##############################################################################
   #                             END OF YOUR CODE                               #
   ##############################################################################
