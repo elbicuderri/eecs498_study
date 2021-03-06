@@ -349,7 +349,23 @@ class FullyConnectedNet(object):
     # deviation equal to weight_scale. Biases should be initialized to zero.   #
     ############################################################################
     # Replace "pass" statement with your code
-    pass
+    self.device= device
+    
+    self.params['W1'] = weight_scale * torch.randn(input_dim, hidden_dims[0], dtype=dtype, device=device)
+    self.params['b1'] = torch.zeros(hidden_dims[0], dtype=dtype, device=device)
+    
+    if (self.num_layers > 2):
+      for num in range(0, self.num_layers-1):
+        self.params[f"W{num+2}"] = weight_scale * torch.randn(hidden_dims[num], hidden_dims[num+1], dtype=dtype, device=device)
+        self.params[f"b{num+2}"] = torch.zeros(hidden_dims[num+1], dtype=dtype, device=device)
+      
+      self.params[f"W{self.num_layers}"] = weight_scale * torch.randn(hidden_dims[-1], num_classes, dtype=dtype, device=device)
+      self.params[f"b{self.num_layers}"] = torch.zeros(num_classes, dtype=dtype, device=device)
+
+    elif (self.num_layers == 2):
+      self.params["W2"] = weight_scale * torch.randn(hidden_dims[0], num_classes, dtype=dtype, device=device)
+      self.params["b2"] = torch.zeros(num_classes, dtype=dtype, device=device)
+          
     ############################################################################
     #                             END OF YOUR CODE                             #
     ############################################################################
@@ -413,7 +429,11 @@ class FullyConnectedNet(object):
     # dropout forward pass.                                                    #
     ############################################################################
     # Replace "pass" statement with your code
-    pass
+    out_list = []
+    cache_list = []
+    for _ in range(self.num_layers - 1):
+      out, cache = Linear_ReLU.forward()
+      
     ############################################################################
     #                             END OF YOUR CODE                             #
     ############################################################################
